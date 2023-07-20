@@ -1,0 +1,5 @@
+verilog work "$XILINX_VIVADO/data/verilog/src/glbl.v"
+ verilog work "../src/xil_iddr.v"
+ verilog work "../src/xil_oddr.v"
+ verilog work "../src/hyper_xface_pll.v"
+ verilog work "../src/hr_pll_example.v"

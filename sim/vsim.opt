@@ -1,0 +1,6 @@
+# Read in by xelab via "-file vsim.opt" option
+-initfile=$XILINX_VIVADO/data/xsim/ip/xsim_ip.ini 
+-L work 
+-L xpm 
+-L unisims_ver 
+-L unimacro_ver
