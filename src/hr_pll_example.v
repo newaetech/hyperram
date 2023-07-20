@@ -66,9 +66,13 @@ module hr_pll_example
 
   output wire        dram_ck,
   output wire        dram_rst_l,
-  output wire        dram_cs_l
+  output wire        dram_cs_l,
+
+  // XXX added for debug:
+  output wire        hyperram_busy
 );// module top
 
+  assign hyperram_busy = hr_busy;
 
   reg           hr_rd_req;
   reg           hr_wr_req;
@@ -149,7 +153,7 @@ end // always
 // 0x0018 : Data Buffer : DWORD1
 // 0x001C : Control   
 //            1 : Write Single DWORD
-//            2 : Read  Single DWORD
+//            2 : Read  Single DWORD XXX NOTE THIS DOESN'T WORK!
 //            3 : Write Burst two DWORDs
 //            4 : Read  Burst two DWORDs
 //            5 : Write Configuration    
@@ -333,6 +337,29 @@ hyper_xface_pll u_hyper_xface_pll
   .dram_rst_l        ( dram_rst_l            ),
   .dram_cs_l         ( dram_cs_l             )
 );// module hyper_xface_pll
+
+
+`ifdef ILA_HYPERRAM
+   ila_hyperram U_ila_hyperram (
+       .clk         (clk                ),
+       .probe0      (hr_wr_req          ),
+       .probe1      (hr_wr_d            ),      // 31:0
+       .probe2      (hr_mem_or_reg      ),
+       .probe3      (hr_rd_req          ),
+       .probe4      (hr_rd_d            ),      // 31:0
+       .probe5      (lb_0010_reg        ),      // 31:0
+       .probe6      (lb_0014_reg        ),      // 31:0
+       .probe7      (lb_0018_reg        ),      // 31:0
+       .probe8      (lb_001c_reg        ),      // 31:0
+       .probe9      (hr_busy            ),
+       .probe10     (hr_busy_p1         ),
+       .probe11     (hr_rd_rdy          ),
+       .probe12     (hr_burst_wr_rdy    ),
+       .probe13     (lb_wr              ),
+       .probe14     (lb_addr            ),      // 31:0
+       .probe15     (lb_wr_d            )       // 31:0
+   );                            
+`endif
 
 
 endmodule // hr_pll_example.v
