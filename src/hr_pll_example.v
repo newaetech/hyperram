@@ -69,7 +69,8 @@ module hr_pll_example
   output wire        dram_cs_l,
 
   // XXX added for debug:
-  output wire        hyperram_busy
+  output wire        hyperram_busy,
+  input  wire        busy_stuck
 );// module top
 
   assign hyperram_busy = hr_busy;
@@ -335,7 +336,9 @@ hyper_xface_pll u_hyper_xface_pll
   .dram_rwds_oe_l    ( dram_rwds_oe_l        ),
   .dram_ck           ( dram_ck               ),
   .dram_rst_l        ( dram_rst_l            ),
-  .dram_cs_l         ( dram_cs_l             )
+  .dram_cs_l         ( dram_cs_l             ),
+
+  .busy_stuck        ( busy_stuck            )
 );// module hyper_xface_pll
 
 

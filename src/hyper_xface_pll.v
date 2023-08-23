@@ -170,7 +170,8 @@ module hyper_xface_pll
   output reg          dram_rwds_oe_l,
 
   output reg  [7:0]   cycle_len,
-  output wire [31:0]  sump_dbg
+  output wire [31:0]  sump_dbg,
+  input  wire         busy_stuck
 );// module hyper_xface_pll
 
 
@@ -670,6 +671,45 @@ end // proc_out
   assign sump_dbg[ 8]    = sump_loc_p2[ 8];   // ODDR cs_l 
   assign sump_dbg[7:0]   = sump_loc_p1[7:0];  // Internal
   assign sump_dbg[13:9]  = sump_loc_p1[13:9]; // Internal
+
+`ifdef ILA_HYPER_XFACE
+ila_hyoer_xface U_ila_hyper_xface (
+	.clk            (clk                ),
+	.probe0         (rd_req       ),
+	.probe1         (wr_req       ),
+	.probe2         (mem_or_reg   ),
+	.probe3         (rd_rdy       ),
+	.probe4         (busy         ),
+	.probe5         (burst_wr_rdy ),
+	.probe6         (lat_2x       ),
+	.probe7         (cs_l_reg           ),
+	.probe8         (dram_rwds_oe_l     ),
+	.probe9         (dq_oe_l            ),
+	.probe10        (rd_dir_jk           ),
+	.probe11        (data_shift_en       ),
+	.probe12        (data_shift_abort    ),
+	.probe13        (dram_rwds_in_ris    ),
+        .probe14        (dram_rwds_in_fal    ),
+        .probe15        (dram_dq_in_ris ),      // 7:0
+        .probe16        (dram_dq_in_fal ),      // 7:0
+        .probe17        (busy_stuck ),
+
+        .probe18        (rd_d ),        // 31:0
+        .probe19        (rd_dwords_cnt ), // 5:0
+        .probe20        (rd_num_dwords), // 5:0
+        .probe21        (dram_rwds_in_ris),
+        .probe22        (rd_dir_jk_p4),
+        .probe23        (rd_word_cnt),
+
+        .probe24        (rd_dir_jk),
+        .probe25        (go_sr),        // 7:0
+        .probe26        (dram_rwds_in_fal_p1),
+        .probe27        (dram_rwds_in_fal),
+        .probe28        (dram_rwds_in_ris_p1)
+
+);
+`endif
+
 
 
 //-----------------------------------------------------------------------------
