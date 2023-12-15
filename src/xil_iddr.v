@@ -38,22 +38,42 @@ module xil_iddr
     assign dout_fal = din;
 
 `else
-// IDDR: Input Double Data Rate Input Register with Set, Reset
-// and Clock Enable.
-// 7 Series Xilinx HDL Libraries Guide, version 2016.2
-IDDRE1 #(
-   // "OPPOSITE_EDGE","SAME_EDGE","SAME_EDGE_PIPELINED"
-  .DDR_CLK_EDGE ("SAME_EDGE_PIPELINED") 
-) u_IDDR
-(
-  .Q1 ( dout_ris ), // 1-bit output for positive edge of clock
-  .Q2 ( dout_fal ), // 1-bit output for negative edge of clock
-  .C  ( clk      ), // 1-bit clock input
-  .CB (~clk      ), // TODO?!?
-  .D  ( din      ), // 1-bit DDR data input
-  .R  ( 1'b0     )  // 1-bit reset
-);
-// End of IDDR_inst instantiation
+    `ifdef ULTRASCALE
+        IDDRE1 #(
+           // "OPPOSITE_EDGE","SAME_EDGE","SAME_EDGE_PIPELINED"
+          .DDR_CLK_EDGE ("SAME_EDGE_PIPELINED") 
+        ) u_IDDR
+        (
+          .Q1 ( dout_ris ), // 1-bit output for positive edge of clock
+          .Q2 ( dout_fal ), // 1-bit output for negative edge of clock
+          .C  ( clk      ), // 1-bit clock input
+          .CB (~clk      ), // TODO?!?
+          .D  ( din      ), // 1-bit DDR data input
+          .R  ( 1'b0     )  // 1-bit reset
+        );
+    `else
+        // IDDR: Input Double Data Rate Input Register with Set, Reset
+        // and Clock Enable.
+        // 7 Series Xilinx HDL Libraries Guide, version 2016.2
+        IDDR #(
+           // "OPPOSITE_EDGE","SAME_EDGE","SAME_EDGE_PIPELINED"
+          .DDR_CLK_EDGE ("SAME_EDGE_PIPELINED"),
+          .INIT_Q1      (1'b0), // Initial value of Q1: 1’b0 or 1’b1
+          .INIT_Q2      (1'b0), // Initial value of Q2: 1’b0 or 1’b1
+          .SRTYPE       ("SYNC") // Set/Reset type: "SYNC" or "ASYNC"
+        ) u_IDDR
+        (
+          .Q1 ( dout_ris ), // 1-bit output for positive edge of clock
+          .Q2 ( dout_fal ), // 1-bit output for negative edge of clock
+          .C  ( clk      ), // 1-bit clock input
+          .CE ( 1'b1     ), // 1-bit clock enable input
+          .D  ( din      ), // 1-bit DDR data input
+          .R  ( 1'b0     ), // 1-bit reset
+          .S  ( 1'b0     )  // 1-bit set
+        );
+        // End of IDDR_inst instantiation
+    `endif
 `endif
+
 
 endmodule

@@ -36,21 +36,39 @@ module xil_oddr
     assign dout = din_ris;
 
 `else
-// ODDR: Output Double Data Rate Output Register with Set, Reset
-// and Clock Enable.
-// 7 Series Xilinx HDL Libraries Guide, version 2016.2
-ODDRE1 #
-(
-  .SRVAL(1'b0)  // Initial value of Q: 1’b0 or 1’b1
-) u_ODDR 
-(
-  .Q(  dout),     // 1-bit DDR output
-  .C(  clk ),     // 1-bit clock input
-  .D1( din_ris ), // 1-bit data input (positive edge)
-  .D2( din_fal ), // 1-bit data input (negative edge)
-  .SR( 1'b0)      // 1-bit reset
-);
-// End of ODDR_inst instantiation
+    `ifdef ULTRASCALE
+        ODDRE1 #
+        (
+          .SRVAL(1'b0)  // Initial value of Q: 1’b0 or 1’b1
+        ) u_ODDR 
+        (
+          .Q(  dout),     // 1-bit DDR output
+          .C(  clk ),     // 1-bit clock input
+          .D1( din_ris ), // 1-bit data input (positive edge)
+          .D2( din_fal ), // 1-bit data input (negative edge)
+          .SR( 1'b0)      // 1-bit reset
+        );
+    `else
+        // ODDR: Output Double Data Rate Output Register with Set, Reset
+        // and Clock Enable.
+        // 7 Series Xilinx HDL Libraries Guide, version 2016.2
+        ODDR #
+        (
+          .DDR_CLK_EDGE("SAME_EDGE"), // "OPPOSITE_EDGE" or "SAME_EDGE"
+          .INIT(1'b0), // Initial value of Q: 1’b0 or 1’b1
+          .SRTYPE("SYNC") // Set/Reset type: "SYNC" or "ASYNC"
+        ) u_ODDR 
+        (
+          .Q(  dout),     // 1-bit DDR output
+          .C(  clk ),     // 1-bit clock input
+          .CE( 1'b1),     // 1-bit clock enable input
+          .D1( din_ris ), // 1-bit data input (positive edge)
+          .D2( din_fal ), // 1-bit data input (negative edge)
+          .R(  1'b0),     // 1-bit reset
+          .S(  1'b0)      // 1-bit set
+        );
+        // End of ODDR_inst instantiation
+    `endif
 `endif
 
 
